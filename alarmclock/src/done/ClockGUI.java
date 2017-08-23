@@ -9,27 +9,27 @@ import todo.AlarmClock;
 public class ClockGUI extends Applet implements KeyListener, ClockTimeDisplay, ItemListener {
 	private static final long serialVersionUID = 1L;
 	// Clock input mode
-	static final int MODE_NONE	=0;
-	static final int MODE_TSHOW	=1;
-	static final int MODE_ASET	=2;
-	static final int MODE_TSET	=3;
-	static final int MODE_ATOGGLE	=4;
-
-	boolean b1 = false;
-	boolean b2 = false;
-	private boolean b1p = false;
-	private boolean b2p = false;
-	boolean bl = false;
-	boolean bu = false;
-	boolean bd = false;
-	boolean br = false;
+	static final int MODE_NONE	  = 0;
+	static final int MODE_TSHOW	  = 1;
+	static final int MODE_ASET	  = 2;
+	static final int MODE_TSET	  = 3;
+	static final int MODE_ATOGGLE = 4;
+	
+	// Key states, current and previous, also used by canvas
+	boolean bs, bsp;    // shift
+	boolean bc, bcp;    // control
+	boolean bl, blp;    // left
+	boolean br, brp;    // right
+	boolean bu, bup;    // up
+	boolean bd, bdp;    // down
+	
 	ClockInput	clkinput;
 	private ClockOutput	clkoutput;
 
 	int cursor = 0;
 	int clockmode = MODE_NONE;
-	int clocktime = 0;// Clock time
-	int alarmtime = 0;// Alarm time
+	int clocktime = 0; // Clock time
+	int alarmtime = 0; // Alarm time
 	private int inputval = 0;// Input value
 	private boolean	hiding = false;
 	private AlarmClock	control;
@@ -84,17 +84,17 @@ public class ClockGUI extends Applet implements KeyListener, ClockTimeDisplay, I
 		int prevmode = clockmode;
 
 		// Read push button states
-		if (b1 != b1p || b2 != b2p) {
-			if (b1 && b2) {
+		if (bs != bsp || bc != bcp) {
+			if (bs && bc) {
 				clkinput.alarmOn = !clkinput.alarmOn;
 				chb_alarmon.setState(clkinput.alarmOn);
 				chb_tshow.setState(true);
 				clockmode = MODE_ATOGGLE;
-			} else if (b1) {
+			} else if (bs) {
 				clkinput.choice = ClockInput.SET_TIME;
 				chb_tset.setState(true);
 				clockmode = MODE_TSET;
-			} else if (b2) {
+			} else if (bc) {
 				clkinput.choice = ClockInput.SET_ALARM;
 				chb_aset.setState(true);
 				clockmode = MODE_ASET;
@@ -104,10 +104,28 @@ public class ClockGUI extends Applet implements KeyListener, ClockTimeDisplay, I
 				clockmode = MODE_TSHOW;
 			}
 		}
-		b1p = b1;
-		b2p = b2;
+		
+		// If any button changed, signal ClockInput
+		if(bs != bsp || bc != bcp 
+				|| !bl && bl != blp 
+				|| !br && br != brp 
+				|| !bu && bu != bup 
+				|| !bd && bd != bdp ) {
+			
+			// Above if logic for avoiding bug JDK-4153069
+			clkinput.lastValueSet = inputval;
+			clkinput.getSemaphoreInstance().give();
+		}
+		
+		// State update
+		bsp = bs;
+		bcp = bc;
+		blp = bl;
+		brp = br;
+		bup = bu;
+		bdp = bd;
 
-		// Any button changed?
+		// Editing to be completed?
 		if (clockmode == MODE_TSET) {
 			TimeSet(prevmode);
 		} else if (clockmode == MODE_ASET) {
@@ -117,10 +135,6 @@ public class ClockGUI extends Applet implements KeyListener, ClockTimeDisplay, I
 		}
 
 		clkcanvas.repaint();
-
-		// Signal ClockInput
-		clkinput.lastValueSet = inputval;
-		clkinput.getSemaphoreInstance().give();
 	}
 
 	private void TimeSet(int prevmode)
@@ -168,10 +182,10 @@ public class ClockGUI extends Applet implements KeyListener, ClockTimeDisplay, I
 	public void keyPressed(KeyEvent event) {
 		switch (event.getKeyCode()) {
 			case KeyEvent.VK_SHIFT:
-				b1 = true;
+				bs = true;
 				break;
 			case KeyEvent.VK_CONTROL:
-				b2 = true;
+				bc = true;
 				break;
 			case KeyEvent.VK_LEFT:
 				bl = true;
@@ -196,10 +210,10 @@ public class ClockGUI extends Applet implements KeyListener, ClockTimeDisplay, I
 	public void keyReleased(KeyEvent event) {
 		switch (event.getKeyCode()) {
 			case KeyEvent.VK_SHIFT:
-				b1 = false;
+				bs = false;
 				break;
 			case KeyEvent.VK_CONTROL:
-				b2 = false;
+				bc = false;
 				break;
 			case KeyEvent.VK_LEFT:
 				bl = false;
@@ -278,6 +292,7 @@ public class ClockGUI extends Applet implements KeyListener, ClockTimeDisplay, I
 			// Control software already running, activate GUI updates:
 			hiding = false;
 		} else {
+			System.out.println("AlarmClock start...");
 			control.start();
 		}
 	}
@@ -293,7 +308,11 @@ public class ClockGUI extends Applet implements KeyListener, ClockTimeDisplay, I
 		// however, not waste time on calling GUI methods. Set flag:
 		hiding = true;
 	}
-
+	
+	public void destroy() {
+		control.terminate();
+	}
+	
 	public void setAlarmPulse(boolean onoff) {
 		alarmpulse = onoff;
 		clkcanvas.repaint();

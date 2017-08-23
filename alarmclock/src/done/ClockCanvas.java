@@ -36,12 +36,12 @@ public class ClockCanvas extends Canvas {
 
 	public void paint(Graphics g) {
 		backbuff.drawImage(clockimg, 0, 0, this);
-		if (parent.b1) {
+		if (parent.bs) {
 			backbuff.drawImage(btnblue_p, 90, 120, this);
 		} else {
 			backbuff.drawImage(btnblue, 90, 120, this);
 		}
-		if (parent.b2) {
+		if (parent.bc) {
 			backbuff.drawImage(btnblue_p, 90, 150, this);
 		} else {
 			backbuff.drawImage(btnblue, 90, 150, this);
