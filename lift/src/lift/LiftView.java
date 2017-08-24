@@ -10,6 +10,7 @@ public class LiftView {
 	private FixedSizePanel entryPane,shaftPane;
 	private FloorExit exitPane;
 	private Basket basket;
+	private Timer repaintTimer;
 	private static int FLOOR_HEIGHT = 100;
 	private static int ENTRY_WIDTH = 300;
 	private static int EXIT_WIDTH = 200;
@@ -45,6 +46,12 @@ public class LiftView {
 		basket = new Basket(SHAFT_WIDTH,NO_OF_FLOORS,FLOOR_HEIGHT,shaftPane);
 		view.pack();
 		view.setVisible(true);
+		repaintTimer = new Timer(20, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				view.repaint();
+			}
+		});
+		repaintTimer.start();
 	}
 
 	public void drawLift(int floor, int load) {
