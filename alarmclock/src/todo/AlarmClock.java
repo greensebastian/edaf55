@@ -35,7 +35,15 @@ public class AlarmClock {
 	 * Tell threads to terminate and wait until they are dead.
 	 */
 	public void terminate() {
-		// Do something more clever here...
+		try {
+			btnHandler.interrupt();
+			time.interrupt();
+			btnHandler.join();
+			time.join();
+		}
+		catch (InterruptedException e){
+		}
+		
 		output.console("AlarmClock exit.");
 	}
 	
@@ -47,53 +55,48 @@ public class AlarmClock {
 		// make something happen by exercising the IO:
 		
 		data = new SharedData();
+		
 		btnHandler = new ButtonHandler();
+		btnHandler.start();
 		
 		time = new TimeHandler();
 		time.start();
-
-		// Create thread objects here...
-		/*Thread removeMeFromApplication = new Thread(new InputOutputTest());
-		
-		// Create threads of execution by calling start...
-		removeMeFromApplication.start(); */
-	}
-	
-	class InputOutputTest implements Runnable {
-		public void run() {
-			long curr; int time, mode; boolean flag;
-			output.console("Click on GUI to obtain key presses!");
-			while (!Thread.currentThread().isInterrupted()) {
-				curr = System.currentTimeMillis();
-				time = input.getValue();
-				flag = input.getAlarmFlag();
-				mode = input.getChoice();
-				output.doAlarm();
-				output.console(curr, time, flag, mode);
-				if (time == 120000) break; // Swe: Bryter för middag
-				signal.take();
-			}
-			output.console("IO-test terminated #");
-		}
-
 	}
 	
 	class ButtonHandler extends Thread {
+		private int oldChoice;
 		public void run() {
 			while(!Thread.currentThread().isInterrupted()){
-				input.getSemaphoreInstance().take();
+				try{
+					input.getSemaphoreInstance().take();
+				}
+				catch (Error e){
+					break;
+				}
 				int choice = input.getChoice();
+				int value = input.getValue();
 				switch (choice) {
 					case ClockInput.SHOW_TIME: {
+						System.out.println(choice + " : " + value);
+						if (oldChoice == ClockInput.SET_TIME){
+							data.setTime(value);
+						}
+						else if (oldChoice == ClockInput.SET_ALARM){
+							data.setAlarm(value);
+						}
 						break;
 					}
 					case ClockInput.SET_ALARM: {
+						System.out.println(choice + " : " + value);
 						break;
 					}
 					case ClockInput.SET_TIME: {
+						System.out.println(choice + " : " + value);
 						break;
 					}
 				}
+				data.alarmCounter = 0;
+				oldChoice = choice;
 			}
 		}
 	}
@@ -104,11 +107,13 @@ public class AlarmClock {
 				
 				long curr = System.currentTimeMillis();
 				data.incTime();
+				output.showTime(data.getTime());
+				if (data.alarmActive()) output.doAlarm();;
 				try {
 					long dt = 1000-curr%1000;
 					sleep(dt);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					break;
 				}
 			}
 		}
@@ -118,6 +123,8 @@ public class AlarmClock {
 		private int seconds;
 		private int minutes;
 		private int hours;
+		private int alarm;
+		private int alarmCounter;
 		private MutexSem mutex;
 		
 		public SharedData(){
@@ -126,6 +133,7 @@ public class AlarmClock {
 			seconds = 0;
 			minutes = 0;
 			hours = 0;
+			alarmCounter = 0;
 			mutex.give();
 		}
 		
@@ -135,6 +143,10 @@ public class AlarmClock {
 			minutes = (hhmmss - 10000*hours)/100;
 			seconds = (hhmmss - 10000*hours - 100*minutes);
 			mutex.give();
+		}
+		
+		private int getTime(){
+			return 10000*hours + 100*minutes + seconds;
 		}
 		
 		private void incTime(){
@@ -154,11 +166,29 @@ public class AlarmClock {
 			mutex.give();
 		}
 		
-		private int getTime(){
-			return 10000*hours + 100*minutes + seconds;
+		private void setAlarm(int hhmmss){
+			alarm = hhmmss;
+		}
+		
+		private int getAlarm(){
+			return alarm;
+		}
+		
+		private boolean alarmActive(){
+			if (!input.getAlarmFlag()){
+				alarmCounter = 0;
+				return false;
+			}
+			
+			if (getTime() == getAlarm()){
+				alarmCounter = 20;
+			}
+			
+			if (alarmCounter > 0){
+				alarmCounter--;
+				return true;
+			}
+			else return false;
 		}
 	}
-	
-	
-	
 }
