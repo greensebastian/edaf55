@@ -40,7 +40,7 @@ public class AlarmClock {
 		catch (InterruptedException e){
 		}
 		
-		output.console("AlarmClock exit.");
+		//output.console("AlarmClock exit.");
 	}
 	
 	/**
