@@ -26,7 +26,14 @@ class Buffer {
 	}
 
 	synchronized String getLine() {
-		// Write the code that implements this method ...
-		return null;
+		try {
+			while(available < 1) wait(); // while so the wait is invoked if the buffer is stolen before execution
+		} catch (InterruptedException exc) {
+			throw new RTError("Buffer.getLine interrupted: " + exc);
+		};
+		String buffString = buffData[nextToGet]; // Store buffer data
+		if (++nextToGet >= size ) nextToGet = 0; // Increment pointer
+		available--;
+		return buffString;
 	}
 }
