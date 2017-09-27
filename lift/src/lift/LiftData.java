@@ -20,29 +20,35 @@ public class LiftData {
 	
 	public synchronized void useLift(int entryLevel, int exitLevel) throws InterruptedException{
 		waitEntry[entryLevel]++;
+		lv.drawLevel(entryLevel, waitEntry[entryLevel]);
 		while(here != entryLevel || load >= maxLoad){
 			System.out.println("Waiting at floor: " + entryLevel);
+			lv.drawLevel(entryLevel, waitEntry[entryLevel]);
 			wait();
 		}
+		
 		System.out.println("Entering elevator: " + here);
 		waitEntry[here]--;
 		waitExit[exitLevel]++;
 		load++;
+		lv.drawLevel(here, waitEntry[here]);
+		lv.drawLift(here, load);
 		notifyAll();
+		
 		while(here != exitLevel){
 			System.out.println("Waiting for floor: " + exitLevel);
 			wait();
 		}
+		
 		System.out.println("Exiting elevator: " + here);
 		waitExit[here]--;
 		load--;
+		lv.drawLevel(here, waitEntry[here]);
 		lv.drawLift(here, load);
-		drawPeople();
 		notifyAll();
 	}
 	
 	public synchronized void moveLift() throws InterruptedException{
-		//drawPeople();
 		while(waitExit[here] > 0){
 			notifyAll();
 			System.out.println("Waiting for people to exit.");
@@ -58,19 +64,21 @@ public class LiftData {
 		}
 		next = here + dir;
 		System.out.println("Moving lift from " + here + " to " + next);
-		drawPeople();
 		lv.moveLift(here, next);
 		here = next;
-		drawPeople();
 		notifyAll();
 	}
 	
-	private void drawPeople(){
+	public synchronized void drawAllPeople(){
 		for(int i = 0; i < nFloors; i++){
 			lv.drawLevel(i, waitEntry[i]);
 			if(i == here){
 				lv.drawLift(i, load);
 			}
 		}
+	}
+	
+	public synchronized int getNFloors(){
+		return nFloors;
 	}
 }

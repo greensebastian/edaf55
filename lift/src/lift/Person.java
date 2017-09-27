@@ -4,8 +4,6 @@ public class Person extends Thread {
 	int entryLevel;
 	int exitLevel;
 	
-	boolean done = false;
-	
 	private LiftData data;
 	
 	public Person(int entry, int exit, LiftData data){
@@ -14,12 +12,30 @@ public class Person extends Thread {
 		this.data = data;
 	}
 	
+	public Person(LiftData data){
+		this.data = data;
+	}
+	
 	public void run(){
-		try {
-			data.useLift(entryLevel, exitLevel);
-			done = true;
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		while(true){
+			// Randomize entry and exit-floors
+			int nFloors = data.getNFloors();
+			int entryLevel = (int)(Math.random()*(nFloors));
+			int exitLevel;
+			do {
+				exitLevel = (int)(Math.random()*(nFloors));
+			}
+			while(exitLevel == entryLevel);
+			
+			this.entryLevel = entryLevel;
+			this.exitLevel = exitLevel;
+			
+			// Tell data object person wants to use the elevator
+			try {
+				data.useLift(entryLevel, exitLevel);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

@@ -8,14 +8,14 @@ public class LiftHandler extends Thread {
 	}
 	
 	public void run(){
-		
+		// Draw all initial people on start
+		// This is handled in the LiftData class hereafter
+		data.drawAllPeople();
 		try {
 			while(true){
 				data.moveLift();
 			}
-			//sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

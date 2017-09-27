@@ -5,28 +5,22 @@ import java.util.LinkedList;
 public class Main {
 
 	public static void main(String[] args) {
-		LinkedList people;
+		LinkedList<Person> people;
 		LiftData data;
 		LiftHandler lift;
 		
-		int nFloors = 6;
+		int nFloors = 7;
 		int maxLoad = 4;
+		int nPeople = 10;
 		
-		people = new LinkedList();
+		people = new LinkedList<Person>();
 		data = new LiftData(nFloors, maxLoad);
 		lift = new LiftHandler(data);
-		for(int i = 0; i < 10; i++){
-			int entryLevel = (int)(Math.random()*(nFloors));
-			int exitLevel;
-			do {
-				exitLevel = (int)(Math.random()*(nFloors));
-			}
-			while(exitLevel == entryLevel);
-			Person p = new Person(entryLevel, exitLevel, data);
+		for(int i = 0; i < nPeople; i++){
+			Person p = new Person(data);
 			p.start();
 			people.add(p);
 		}
-		
 		lift.start();
 
 	}
