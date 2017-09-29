@@ -18,6 +18,11 @@ public class Person extends Thread {
 	
 	public void run(){
 		while(true){
+			try {
+				sleep((long)(Math.random()*1000*46)); // Sleep for random time
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 			// Randomize entry and exit-floors
 			int nFloors = data.getNFloors();
 			int entryLevel = (int)(Math.random()*(nFloors));

@@ -11,7 +11,7 @@ public class Main {
 		
 		int nFloors = 7;
 		int maxLoad = 4;
-		int nPeople = 10;
+		int nPeople = 5;
 		
 		people = new LinkedList<Person>();
 		data = new LiftData(nFloors, maxLoad);

@@ -21,9 +21,9 @@ public class LiftData {
 	public synchronized void useLift(int entryLevel, int exitLevel) throws InterruptedException{
 		waitEntry[entryLevel]++;
 		lv.drawLevel(entryLevel, waitEntry[entryLevel]);
+		notifyAll();
 		while(here != entryLevel || load >= maxLoad){
 			System.out.println("Waiting at floor: " + entryLevel);
-			lv.drawLevel(entryLevel, waitEntry[entryLevel]);
 			wait();
 		}
 		
@@ -49,13 +49,24 @@ public class LiftData {
 	}
 	
 	public synchronized void moveLift() throws InterruptedException{
+		notifyAll();
 		while(waitExit[here] > 0){
-			notifyAll();
 			System.out.println("Waiting for people to exit.");
 			wait();
 		}
+		
+		int count = 0;
+		while (count == 0){
+			count = 0 + load;
+			for(int i = 0; i < waitEntry.length; i++){
+				count += waitEntry[i];
+			}
+			if(count == 0){
+				wait();
+			}
+		}
+		
 		while(waitEntry[here] > 0 && load < maxLoad){
-			notifyAll();
 			System.out.println("Waiting for people to enter.");
 			wait();
 		}
