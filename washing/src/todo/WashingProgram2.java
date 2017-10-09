@@ -3,9 +3,10 @@ package todo;
 import done.*;
 
 /**
- * Program 1 of washing machine. Does the following:
+ * Program 2 of washing machine. Does the following:
  * <UL>
  *   <LI>Locks the hatch
+ *   <LI>Pre-wash for 15 minutes
  *   <LI>Pumps in water
  *   <LI>Heats up to 60 degrees
  *   <LI>Start slow spin
@@ -18,7 +19,7 @@ import done.*;
  *   <LI>Unlocks the hatch.
  * </UL>
  */
-class WashingProgram1 extends WashingProgram {
+class WashingProgram2 extends WashingProgram {
 	private long speed;
 
 	// ------------------------------------------------------------- CONSTRUCTOR
@@ -30,7 +31,7 @@ class WashingProgram1 extends WashingProgram {
 	 * @param   waterController  The WaterController to use
 	 * @param   spinController   The SpinController to use
 	 */
-	public WashingProgram1(AbstractWashingMachine mach,
+	public WashingProgram2(AbstractWashingMachine mach,
 			double speed,
 			TemperatureController tempController,
 			WaterController waterController,
@@ -51,7 +52,7 @@ class WashingProgram1 extends WashingProgram {
 		myMachine.setLock(true);
 		
 		/*
-		 * Main wash
+		 * Prewash
 		 */
 		
 		// Fill machine
@@ -65,10 +66,41 @@ class WashingProgram1 extends WashingProgram {
 				WaterEvent.WATER_IDLE,
 				0.0));
 		
-		// Heat up machine to 60*
+		// Heat up machine to 40*
 		myTempController.putEvent(new TemperatureEvent(this,
 				TemperatureEvent.TEMP_SET,
-				60.0));
+				40.0));
+		mailbox.doFetch();
+		
+		// Spin slow
+		mySpinController.putEvent(new SpinEvent(this,
+				SpinEvent.SPIN_SLOW));
+		
+		sleep(1000*60*15/speed);
+		
+		// Turn off spin
+		mySpinController.putEvent(new SpinEvent(this,
+				SpinEvent.SPIN_OFF));
+
+		// Turn off heating
+		myTempController.putEvent(new TemperatureEvent(this,
+				TemperatureEvent.TEMP_IDLE,
+				0.0));
+		
+		// Drain water
+		myWaterController.putEvent(new WaterEvent(this,
+				WaterEvent.WATER_DRAIN,
+				0.0));
+		mailbox.doFetch();
+		
+		/*
+		 * Main wash
+		 */
+		
+		// Heat up machine to 90*
+		myTempController.putEvent(new TemperatureEvent(this,
+				TemperatureEvent.TEMP_SET,
+				90.0));
 		mailbox.doFetch();
 		
 		// Start slow rotation
