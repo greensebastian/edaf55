@@ -17,6 +17,9 @@ public class WashingController implements ButtonListener {
 		temp = new TemperatureController(theMachine, theSpeed);
 		water = new WaterController(theMachine, theSpeed);
 		spin = new SpinController(theMachine, theSpeed);
+		temp.start();
+		water.start();
+		spin.start();
     }
 
     public void processButton(int theButton) {

@@ -14,7 +14,7 @@ public class SpinController extends PeriodicThread {
 	long lastSwitch;
 
 	public SpinController(AbstractWashingMachine mach, double speed) {
-		super((long) (1000/speed)); // TODO: replace with suitable period
+		super((long) (500/speed)); // TODO: replace with suitable period
 		this.mach = mach;
 		this.speed = speed;
 		mode = SpinEvent.SPIN_OFF;

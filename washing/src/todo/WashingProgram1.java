@@ -104,11 +104,15 @@ class WashingProgram1 extends WashingProgram {
 			
 			sleep(1000*60*2/speed);
 			
+			// CMLA #3, #4
 			myWaterController.putEvent(new WaterEvent(this,
 					WaterEvent.WATER_DRAIN,
 					0.0));
 			mailbox.doFetch();
 		}
+		myWaterController.putEvent(new WaterEvent(this,
+				WaterEvent.WATER_IDLE,
+				0.0));
 		
 		/*
 		 * Centrifuge
