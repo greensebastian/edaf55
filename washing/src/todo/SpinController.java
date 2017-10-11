@@ -19,7 +19,7 @@ public class SpinController extends PeriodicThread {
 		this.speed = speed;
 		mode = SpinEvent.SPIN_OFF;
 		lastSwitch = System.currentTimeMillis();
-		currentDirection = AbstractWashingMachine.SPIN_LEFT;
+		currentDirection = AbstractWashingMachine.SPIN_RIGHT;
 	}
 
 	public void perform() {
@@ -36,10 +36,18 @@ public class SpinController extends PeriodicThread {
 		}
 		case SpinEvent.SPIN_SLOW: {
 			long currentTime = System.currentTimeMillis();
-			if((currentTime-lastSwitch) > 1000*60/speed)
-			currentDirection = (currentDirection == AbstractWashingMachine.SPIN_RIGHT) ? AbstractWashingMachine.SPIN_LEFT : AbstractWashingMachine.SPIN_RIGHT;
+			if((currentTime-lastSwitch) > (1000*60*4/speed)){
+				if(currentDirection == AbstractWashingMachine.SPIN_RIGHT){
+					currentDirection = AbstractWashingMachine.SPIN_LEFT;
+					System.out.println("Bytte håll till vänster");
+				}
+				else{
+					currentDirection = AbstractWashingMachine.SPIN_RIGHT;
+					System.out.println("Bytte håll till höger");
+				}
+				lastSwitch = currentTime;
+			}
 			mach.setSpin(currentDirection);
-			lastSwitch = currentTime;
 			break;
 		}
 		case SpinEvent.SPIN_FAST: {

@@ -582,11 +582,11 @@ class WashingView extends Frame implements Runnable {
 
 	// Window dimensions
 	private static final int WINDOW_W      = 600;
-	private static final int WINDOW_H      = 700;
+	private static final int WINDOW_H      = 800;
 
 	// Temperature bar position
 	private static final int TEMP_X        = 300;
-	private static final int TEMP_Y        = 50;
+	private static final int TEMP_Y        = 700;
 	private static final double TEMP_SCALE = 2;
 
 	// Water level bar position
@@ -602,13 +602,13 @@ class WashingView extends Frame implements Runnable {
 
 	// Temperature label position
 	private static final int TEMPLABEL_X   = 100;
-	private static final int TEMPLABEL_Y   = 10;
+	private static final int TEMPLABEL_Y   = 660;
 	private static final int TEMPLABEL_W   = 190;
 	private static final int TEMPLABEL_H   = 80;
 
 	// Time label position
 	private static final int TIMELABEL_X   = 10;
-	private static final int TIMELABEL_Y   = 10;
+	private static final int TIMELABEL_Y   = 610;
 	private static final int TIMELABEL_W   = 80;
 	private static final int TIMELABEL_H   = 80;
 

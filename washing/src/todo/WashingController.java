@@ -39,7 +39,7 @@ public class WashingController implements ButtonListener {
 		}
 		case 2: {
 			if(activeProgram == null || !activeProgram.isAlive()){
-				activeProgram = new WashingProgram1(theMachine, theSpeed, temp, water, spin);
+				activeProgram = new WashingProgram2(theMachine, theSpeed, temp, water, spin);
 				activeProgram.start();
 			}
 			break;

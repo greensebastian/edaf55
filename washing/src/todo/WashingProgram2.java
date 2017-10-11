@@ -97,6 +97,15 @@ class WashingProgram2 extends WashingProgram {
 		 * Main wash
 		 */
 		
+		myWaterController.putEvent(new WaterEvent(this,
+				WaterEvent.WATER_FILL,
+				0.5));
+		mailbox.doFetch();
+		
+		myWaterController.putEvent(new WaterEvent(this,
+				WaterEvent.WATER_IDLE,
+				0.0));
+		
 		// Heat up machine to 90*
 		myTempController.putEvent(new TemperatureEvent(this,
 				TemperatureEvent.TEMP_SET,
