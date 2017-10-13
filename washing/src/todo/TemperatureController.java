@@ -15,7 +15,7 @@ public class TemperatureController extends PeriodicThread {
 	WashingProgram source;
 
 	public TemperatureController(AbstractWashingMachine mach, double speed) {
-		super((long) (2000/speed)); // TODO: replace with suitable period
+		super((long) (100/speed)); // TODO: replace with suitable period
 		mode = TemperatureEvent.TEMP_IDLE;
 		temp = 0;
 		this.mach = mach;
@@ -43,7 +43,7 @@ public class TemperatureController extends PeriodicThread {
 			break;
 		}
 		case TemperatureEvent.TEMP_SET: {
-			if(mach.getTemperature() >= temp){
+			if(mach.getTemperature() >= temp - 0.2){
 				mach.setHeating(false);
 				if(taskInProgress){
 					taskInProgress = false;
@@ -51,7 +51,7 @@ public class TemperatureController extends PeriodicThread {
 				}
 			}
 			// CMLA #2
-			else if(mach.getTemperature() <= temp-2 && mach.getWaterLevel() > 0.1) {
+			else if(mach.getTemperature() <= temp-1.8 && mach.getWaterLevel() > 0.1) {
 				mach.setHeating(true);
 			}
 			break;

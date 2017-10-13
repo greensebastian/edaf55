@@ -26,8 +26,8 @@ public class WashingController implements ButtonListener {
 		switch(theButton) {
 		case 0: {
 			if(activeProgram != null && !activeProgram.isInterrupted()) activeProgram.interrupt();
-			activeProgram = new WashingProgram0(theMachine, theSpeed, temp, water, spin);
-			activeProgram.start();
+			/*activeProgram = new WashingProgram0(theMachine, theSpeed, temp, water, spin);
+			activeProgram.start();*/
 			break;
 		}
 		case 1: {
